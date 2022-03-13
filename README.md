@@ -18,7 +18,7 @@ user5: 2
 
 Streamers may use this for their decision-making (e.g. which dialogue option to choose).
 But just glancing over the chat is not really democratic hence we
-need something to give everyone an exact picture. This is where chatvotes come in.
+need something to give everyone an exact picture. This is where chatvotes comes in.
 
 ## Installation
 
@@ -27,7 +27,7 @@ need something to give everyone an exact picture. This is where chatvotes come i
 ## Quick Start
 
 A `PollSite` is the starting point for registering votes.
-You can configure the start and release timeouts and threhshold
+You can configure the start and release timeouts and threshold
 with `PollSiteConfig`:
 
 ```go
