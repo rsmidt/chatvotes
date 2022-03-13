@@ -27,6 +27,7 @@ func (s *StubVoteStore) GetVoteCount() int {
 func (s *StubVoteStore) Reset() {
 	s.voters = map[string]bool{}
 	s.votes = map[int]int{}
+	s.totalVotes = 0
 }
 
 func (s *StubVoteStore) AddUniqueVote(vote *Vote) bool {
@@ -314,6 +315,9 @@ func assertEmptyStubStore(t *testing.T, store *StubVoteStore) {
 	}
 	if len(store.voters) != 0 {
 		t.Error("expected store voters to be reset after release")
+	}
+	if store.totalVotes != 0 {
+		t.Error("expected store total votes to be reset after release")
 	}
 }
 
