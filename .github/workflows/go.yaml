@@ -1,0 +1,25 @@
+on:
+  push:
+    branches:
+      - '*'
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '^1.17.0'
+      - uses: actions/cache@v2
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      - name: Fetch Deps
+        run: go mod download
+      - name: Get coverage
+        run: go test -coverprofile=cover.out
+      - name: Upload coverage to codecov.io
+        uses: codecov/codecov-action@v1

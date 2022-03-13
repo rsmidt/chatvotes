@@ -1,4 +1,5 @@
-# :bar_chart: chatvotes
+# :bar_chart: chatvotes 
+[![codecov](https://codecov.io/gh/rsmidt/chatvotes/branch/main/graph/badge.svg?token=SX3EQ99CX2)](https://codecov.io/gh/rsmidt/chatvotes)
 
 See what your chat really wants without lifting a finger.
 
