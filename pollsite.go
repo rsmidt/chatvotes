@@ -47,18 +47,18 @@ type StateTransition struct {
 
 // PollSiteConfig is the configuration for a poll site.
 type PollSiteConfig struct {
-	// startTimeout is the maximum duration in which the required vote count
-	// specified in startThreshold has to be reached.
-	startTimeout time.Duration
+	// StartTimeout is the maximum duration in which the required vote count
+	// specified in StartThreshold has to be reached.
+	StartTimeout time.Duration
 
-	// startThreshold is the minimum number of votes that to has to be reached
+	// StartThreshold is the minimum number of votes that to has to be reached
 	// before the start times out.
-	startThreshold int
+	StartThreshold int
 
-	// releaseTimeout is the maximum duration in which votes have to be registered
+	// ReleaseTimeout is the maximum duration in which votes have to be registered
 	// to reset the release timeout and keep the voting alive.
 	// After reaching the timeout, the poll site will transition back to StateIdle.
-	releaseTimeout time.Duration
+	ReleaseTimeout time.Duration
 }
 
 // NewPollSite creates and sets up a new PollSite.
@@ -113,8 +113,8 @@ func (ps *PollSite) Stop() {
 func (ps *PollSite) Start(ctx context.Context) error {
 	ps.setNextState(StateIdle)
 
-	ps.startTicker = time.NewTicker(ps.config.startTimeout)
-	ps.releaseTicker = time.NewTicker(ps.config.releaseTimeout)
+	ps.startTicker = time.NewTicker(ps.config.StartTimeout)
+	ps.releaseTicker = time.NewTicker(ps.config.ReleaseTimeout)
 
 	for {
 		select {
@@ -154,7 +154,7 @@ func (ps *PollSite) handleNewVote(vote *Vote) {
 	switch ps.state {
 	case StateIdle:
 		ps.voteCache = append(ps.voteCache, vote)
-		if len(ps.voteCache) < ps.config.startThreshold {
+		if len(ps.voteCache) < ps.config.StartThreshold {
 			return
 		}
 
@@ -162,12 +162,12 @@ func (ps *PollSite) handleNewVote(vote *Vote) {
 			ps.store.AddUniqueVote(v)
 		}
 		ps.voteCache = nil
-		ps.releaseTicker.Reset(ps.config.releaseTimeout)
+		ps.releaseTicker.Reset(ps.config.ReleaseTimeout)
 		ps.setNextState(StateActiveVoting)
 	case StateActiveVoting:
 		ps.store.AddUniqueVote(vote)
 
-		ps.releaseTicker.Reset(ps.config.releaseTimeout)
+		ps.releaseTicker.Reset(ps.config.ReleaseTimeout)
 	}
 }
 
@@ -185,7 +185,7 @@ func (ps *PollSite) handleReleaseTimeout() {
 	}
 
 	ps.store.Reset()
-	ps.startTicker.Reset(ps.config.releaseTimeout)
+	ps.startTicker.Reset(ps.config.ReleaseTimeout)
 	ps.setNextState(StateIdle)
 }
 

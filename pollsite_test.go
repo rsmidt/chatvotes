@@ -51,9 +51,9 @@ func TestPollSite_Start(t *testing.T) {
 	t.Run("does not start voting if threshold is not reached within time", func(t *testing.T) {
 		store := newStubVoteStore()
 		site := NewPollSite(store, &PollSiteConfig{
-			startThreshold: 5,
-			startTimeout:   time.Millisecond * 5,
-			releaseTimeout: time.Millisecond * 5,
+			StartThreshold: 5,
+			StartTimeout:   time.Millisecond * 5,
+			ReleaseTimeout: time.Millisecond * 5,
 		})
 
 		mustStartSilently(t, site)
@@ -81,9 +81,9 @@ func TestPollSite_Start(t *testing.T) {
 	t.Run("starts voting if threshold is reached within time and respects votes before", func(t *testing.T) {
 		store := newStubVoteStore()
 		site := NewPollSite(store, &PollSiteConfig{
-			startThreshold: 5,
-			startTimeout:   time.Millisecond * 5,
-			releaseTimeout: time.Millisecond * 5,
+			StartThreshold: 5,
+			StartTimeout:   time.Millisecond * 5,
+			ReleaseTimeout: time.Millisecond * 5,
 		})
 
 		mustStartSilently(t, site)
@@ -113,9 +113,9 @@ func TestPollSite_InsertVote(t *testing.T) {
 	t.Run("returns an error if trying to insert votes on a stopped poll site", func(t *testing.T) {
 		store := newStubVoteStore()
 		site := NewPollSite(store, &PollSiteConfig{
-			startThreshold: 5,
-			startTimeout:   time.Millisecond * 5,
-			releaseTimeout: time.Millisecond * 5,
+			StartThreshold: 5,
+			StartTimeout:   time.Millisecond * 5,
+			ReleaseTimeout: time.Millisecond * 5,
 		})
 
 		mustStartSilently(t, site)
@@ -132,9 +132,9 @@ func TestPollSite_InsertVote(t *testing.T) {
 	t.Run("inserting votes on a running poll site does not fail", func(t *testing.T) {
 		store := newStubVoteStore()
 		site := NewPollSite(store, &PollSiteConfig{
-			startThreshold: 5,
-			startTimeout:   time.Millisecond * 5,
-			releaseTimeout: time.Millisecond * 5,
+			StartThreshold: 5,
+			StartTimeout:   time.Millisecond * 5,
+			ReleaseTimeout: time.Millisecond * 5,
 		})
 
 		if err := site.InsertVote(&Vote{
@@ -150,9 +150,9 @@ func TestPollSiteVotingFinished(t *testing.T) {
 	t.Run("stops after timeout without votes", func(t *testing.T) {
 		store := newStubVoteStore()
 		site := NewPollSite(store, &PollSiteConfig{
-			startThreshold: 5,
-			startTimeout:   time.Millisecond * 5,
-			releaseTimeout: time.Millisecond * 5,
+			StartThreshold: 5,
+			StartTimeout:   time.Millisecond * 5,
+			ReleaseTimeout: time.Millisecond * 5,
 		})
 		makeSiteWithVoting(t, site)
 		defer site.Stop()
@@ -166,9 +166,9 @@ func TestPollSiteVotingFinished(t *testing.T) {
 	t.Run("does not stop immediately if vote is registered", func(t *testing.T) {
 		store := newStubVoteStore()
 		site := NewPollSite(store, &PollSiteConfig{
-			startThreshold: 5,
-			startTimeout:   time.Millisecond * 100,
-			releaseTimeout: time.Millisecond * 50,
+			StartThreshold: 5,
+			StartTimeout:   time.Millisecond * 100,
+			ReleaseTimeout: time.Millisecond * 50,
 		})
 		makeSiteWithVoting(t, site)
 		defer site.Stop()
@@ -194,9 +194,9 @@ func TestPollSiteVotingFinished(t *testing.T) {
 	t.Run("resets votes after returning to idle", func(t *testing.T) {
 		store := newStubVoteStore()
 		site := NewPollSite(store, &PollSiteConfig{
-			startThreshold: 5,
-			startTimeout:   time.Millisecond * 25,
-			releaseTimeout: time.Millisecond * 10,
+			StartThreshold: 5,
+			StartTimeout:   time.Millisecond * 25,
+			ReleaseTimeout: time.Millisecond * 10,
 		})
 		makeSiteWithVoting(t, site)
 		defer site.Stop()
@@ -211,9 +211,9 @@ func TestPollSiteVotingFinished(t *testing.T) {
 	t.Run("released site can start voting again", func(t *testing.T) {
 		store := newStubVoteStore()
 		site := NewPollSite(store, &PollSiteConfig{
-			startThreshold: 5,
-			startTimeout:   time.Millisecond * 25,
-			releaseTimeout: time.Millisecond * 10,
+			StartThreshold: 5,
+			StartTimeout:   time.Millisecond * 25,
+			ReleaseTimeout: time.Millisecond * 10,
 		})
 		makeSiteWithVoting(t, site)
 		defer site.Stop()
@@ -225,7 +225,7 @@ func TestPollSiteVotingFinished(t *testing.T) {
 		assertEmptyStubStore(t, store)
 
 		go func() {
-			for i := 0; i < site.config.startThreshold; i++ {
+			for i := 0; i < site.config.StartThreshold; i++ {
 				vote := &Vote{
 					voterID: fmt.Sprintf("voter %d", i),
 					choice:  1,
@@ -234,7 +234,7 @@ func TestPollSiteVotingFinished(t *testing.T) {
 			}
 		}()
 
-		assertNoTimeout(t, site.config.startTimeout+time.Millisecond, func() {
+		assertNoTimeout(t, site.config.StartTimeout+time.Millisecond, func() {
 			assertStateChange(t, site, StateIdle, StateActiveVoting)
 		})
 	})
@@ -242,9 +242,9 @@ func TestPollSiteVotingFinished(t *testing.T) {
 	t.Run("returns a result after finishing a voting", func(t *testing.T) {
 		store := newStubVoteStore()
 		site := NewPollSite(store, &PollSiteConfig{
-			startThreshold: 5,
-			startTimeout:   time.Millisecond * 25,
-			releaseTimeout: time.Millisecond * 10,
+			StartThreshold: 5,
+			StartTimeout:   time.Millisecond * 25,
+			ReleaseTimeout: time.Millisecond * 10,
 		})
 		makeSiteWithVoting(t, site)
 		defer site.Stop()
@@ -267,9 +267,9 @@ func TestPollSiteVotingFinished(t *testing.T) {
 	t.Run("allows to be cancelled with context", func(t *testing.T) {
 		store := newStubVoteStore()
 		site := NewPollSite(store, &PollSiteConfig{
-			startThreshold: 5,
-			startTimeout:   time.Millisecond * 25,
-			releaseTimeout: time.Millisecond * 10,
+			StartThreshold: 5,
+			StartTimeout:   time.Millisecond * 25,
+			ReleaseTimeout: time.Millisecond * 10,
 		})
 		defer site.Stop()
 
@@ -289,9 +289,9 @@ func TestPollSiteVotingFinished(t *testing.T) {
 	t.Run("does not return error if stopped normally", func(t *testing.T) {
 		store := newStubVoteStore()
 		site := NewPollSite(store, &PollSiteConfig{
-			startThreshold: 5,
-			startTimeout:   time.Millisecond * 25,
-			releaseTimeout: time.Millisecond * 10,
+			StartThreshold: 5,
+			StartTimeout:   time.Millisecond * 25,
+			ReleaseTimeout: time.Millisecond * 10,
 		})
 
 		go func() {
@@ -322,7 +322,7 @@ func makeSiteWithVoting(t *testing.T, site *PollSite) {
 	mustStartSilently(t, site)
 
 	go func() {
-		for i := 0; i < site.config.startThreshold; i++ {
+		for i := 0; i < site.config.StartThreshold; i++ {
 			vote := &Vote{
 				voterID: fmt.Sprintf("voter %d", i),
 				choice:  1,
@@ -331,7 +331,7 @@ func makeSiteWithVoting(t *testing.T, site *PollSite) {
 		}
 	}()
 
-	assertNoTimeout(t, site.config.startTimeout+time.Millisecond, func() {
+	assertNoTimeout(t, site.config.StartTimeout+time.Millisecond, func() {
 		assertStateChange(t, site, StateIdle, StateActiveVoting)
 	})
 }
