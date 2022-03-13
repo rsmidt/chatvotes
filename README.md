@@ -32,9 +32,9 @@ with `PollSiteConfig`:
 
 ```go
 site := chatvotes.NewPollSite(voteStore, &chatvotes.PollSiteConfig{
-    startTimeout: time.Seconds * 10,
-	startThreshold: 15,
-	releaseTimeout: time.Seconds * 20
+    StartTimeout: time.Seconds * 10,
+	StartThreshold: 15,
+	ReleaseTimeout: time.Seconds * 20
 })
 
 defer site.Stop()
